@@ -19,6 +19,8 @@
 # Support from NSF AGS-1623912 is gratefully acknowledged
 #
 
+# TODO Refactor
+import string
 import numpy as np
 import netCDF4
 import matplotlib.pyplot as plt
@@ -31,17 +33,19 @@ from datetime import datetime
 
 # VALUES TO SET *************************************************
 # set date, lat-lon range, and PV-value definition of tropopause
-mydate='20171130'
-myhour='06'
-(lat1,lat2)=(20,60)
-(lon1,lon2)=(-140,-50)
-tpdef=2   # definition of tropopause in PVU
+my_date = "20171130"
+current_date = datetime.now().strftime("%Y%m%d")
+my_hour = "06"
+latitudes = [20, 60]
+longitudes = [-140, -50]
+tpdef = 2   # definition of tropopause in PVU
 #****************************************************************
 
-lon1=lon1+360
-lon2=lon2+360
+longitudes = [longitude + 360 for longitude in longitudes]
 
 #constants
+# TODO convert to a mapping, set built-ins as needed
+
 re=6.37e6
 g=9.81
 cp=1004.5
@@ -51,11 +55,17 @@ omega=7.292e-5
 pi=3.14159265
 
 # open dataset, retreive variables, close dataset
+# TODO set to detect if dataset is present in directory
 
-url='http://nomads.ncep.noaa.gov:80/dods/gfs_0p25/gfs'+\
-mydate+'/gfs_0p25_'+myhour+'z_anl'
+def set_nomads_url(date: string = current_date, run_hour: string):
+    host = "nomads.ncep.noaa.gov"
+    port = 80
+    path = "/dods/gfs_0p25/gfs"
+    return f"http://{host}:{port}{path}/{date}/gfs_0p25_{run_hour}z_anl"
 
-file = netCDF4.Dataset(url)
+
+file = netCDF4.Dataset(set_nomads_url(my_date, my_hour)
+assert file not None
 
 lat_in  = file.variables['lat'][:]
 lon_in  = file.variables['lon'][:]
@@ -72,10 +82,10 @@ file.close()
 
 # get array indices for lat-lon range
 # specified above
-iy1 = np.argmin( np.abs( lat_in - lat1 ) )
-iy2 = np.argmin( np.abs( lat_in - lat2 ) ) 
-ix1 = np.argmin( np.abs( lon_in - lon1 ) )
-ix2 = np.argmin( np.abs( lon_in - lon2 ) )  
+iy1 = np.argmin(np.abs(lat_in - latitudes[0]))
+iy2 = np.argmin(np.abs(lat_in - latitudes[1])) 
+ix1 = np.argmin(np.abs(lon_in - longitudes[0]))
+ix2 = np.argmin(np.abs(lon_in - longitudes[1]))  
 
 # select specified lat-lon range
 t=t_in[:,iy1:iy2,ix1:ix2]
