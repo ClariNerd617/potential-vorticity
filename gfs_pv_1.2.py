@@ -161,7 +161,7 @@ for ix in range(0, nx - 1):
                     tp_theta[iy, ix] = (((lev[iz] - tp[iy, ix]) * theta[iz + 1, iy, ix] + (tp[iy, ix] - lev[iz + 1])
                                          * theta[iz, iy, ix]) / (lev[iz] - lev[iz + 1]))
                     tp_hgt[iy, ix] = (((lev[iz] - tp[iy, ix]) * hgt[iz + 1, iy, ix] + (tp[iy, ix] - lev[iz + 1])
-                                       * hgt[iz, iy, ix]) /(lev[iz] - lev[iz + 1]))
+                                       * hgt[iz, iy, ix]) / (lev[iz] - lev[iz + 1]))
 
 # calculate PV on the 330K isentropic surface
 # (also not in a pythonic way)
@@ -184,6 +184,7 @@ for ix in range(0, nx - 1):
 tp = gaussian_filter(tp, sigma=1)
 tp_theta = gaussian_filter(tp_theta, sigma=1)
 pv330 = gaussian_filter(pv330, sigma=1)
+
 
 # define spatial correlation function for testing results
 
